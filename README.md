@@ -1,73 +1,53 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="200" alt="Nest Logo" /></a>
-</p>
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+# Generics TypeScript
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://coveralls.io/github/nestjs/nest?branch=master" target="_blank"><img src="https://coveralls.io/repos/github/nestjs/nest/badge.svg?branch=master#9" alt="Coverage" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+Esta es una implementación del ejemplo de Generics implementado en NestJS con TypeScript. Solamente es una traducción de lenguaje del [ejemplo de Generics del docente Fernando Dodino](https://github.com/uqbar-project/eg-generics-kotlin) desarrollado en kotlin.
 
-## Description
+Este ejemplo didáctico, muestra como utilizando **Generics**, podemos evitar duplicar código.
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+## Dominio
 
-## Installation
+Estamos modelando el dominio para un coleccionista de autos, figuritas y otras posibles cosas.
 
-```bash
-$ npm install
+- Los autos son raros si fueron fabricados antes de 1930
+- Las figuritas son raras si son un holograma
+
+Queremos poder armar colecciones de autos o de figuritas y hacer operaciones con ellas:
+
+- Agregar elementos (que sean solo autos o figuritas)
+- Saber si completamos la colección (cuando llegamos a n elementos)
+- Saber cuántos elementos "raros" tenemos
+- Saber si hay mayoría de elementos raros 
+
+entre otras cosas
+
+> No nos interesa tener una colección polimórfica de elementos, pero sí poder armar distintas colecciones, ya sean de autos, de figuritas, o de cosas nuevas a futuro.
+
+## Solución
+
+Podés ver el ejemplo cómo definimos una colección de un tipo genérico `T`:
+
+``` typescript
+export class Coleccion<T extends Coleccionable> {
+  private elementos: Set<T> = new Set<T>();
+
+  constructor(private cantidadObjetivo: number) {}
+
+  agregarElemento(elemento: T): void {
+    this.elementos.add(elemento);
+  }
+
+  ...
 ```
 
-## Running the app
+Y luego cómo se usa en un test para armar una colección de figuritas:
 
-```bash
-# development
-$ npm run start
+``` typescript
+describe('Dada una colección de Figuritas,', () => {
+  let coleccionFiguritas: Coleccion<Figurita>;
 
-# watch mode
-$ npm run start:dev
-
-# production mode
-$ npm run start:prod
+  beforeEach(() => {
+    coleccionFiguritas = new Coleccion<Figurita>(2);
+    coleccionFiguritas.agregarElemento(new Figurita(true));
+  });
 ```
-
-## Test
-
-```bash
-# unit tests
-$ npm run test
-
-# e2e tests
-$ npm run test:e2e
-
-# test coverage
-$ npm run test:cov
-```
-
-## Support
-
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
-
-## Stay in touch
-
-- Author - [Kamil Myśliwiec](https://kamilmysliwiec.com)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
-
-## License
-
-Nest is [MIT licensed](LICENSE).
